@@ -1,0 +1,162 @@
+body {
+	margin: 20px;
+	padding: 0px;
+	background: #fff;
+	color: #333;
+	font-family: "Trebuchet MS", verdana, sans-serif;
+	font-size: 80%;
+}
+
+h1 {
+	margin-bottom: 15px;
+	padding: 4px;
+	background: #000;
+	color: #fff;
+	text-align: center;
+	font-family: "Trebuchet MS", verdana, sans-serif;
+	font-size: 130%;
+	font-weight: bold;
+}
+
+h2 {
+	margin: 15px 0px 15px 0px;
+	font-family: "Trebuchet MS", verdana, sans-serif;
+	font-size: 130%;
+	font-weight: bold;
+}
+
+h3 {
+	margin: 0px 0px 5px 0px;
+	font-family: "Trebuchet MS", verdana, sans-serif;
+	font-size: 115%;
+	font-weight: bold;
+}
+
+img {
+	margin: 0px;
+	border: none;
+}
+
+dt {
+	margin: 10px 0px 2px 0px;
+	font-weight: bold;
+}
+
+dd {
+	margin: 5px 20px;
+}
+
+p, pre {
+	font-family: "Trebuchet MS", verdana, sans-serif;
+	font-size: 100%;
+	margin: 5px;
+}
+
+span[class="A"] { color: #008000; }
+span[class="D"] { color: #C00000; }
+span[class="M"] { color: #000000; }
+span[class="R"] { color: #6000BF; }
+
+.branch {
+	color: #AA5500;
+}
+
+.tag {
+	color: #00C;
+}
+
+.ext_links {
+	font-size: 90%;
+}
+
+.hidden { display: none; }
+.shown  { display: block; }
+
+div.legend {
+	margin: 0px auto;
+	padding: 3px 6px;
+	width: 80%;
+	border: 1px #CCC solid;
+	background: #F9F9F9;
+}
+
+div.legend ul {
+	margin: 0px;
+	padding: 0px;
+}
+
+div.legend li {
+	margin: 0px 3px;
+	display: inline;
+}
+
+#devcontrol {
+	margin-bottom: 4px;
+}
+
+#devcontrol td {
+	padding: 0px 2px;
+	font-size: 100%;
+}
+
+#devcontrol img {
+	border: none;
+}
+
+#devsort_adiv { display: block; }
+#devsort_commits { display: none; }
+div.inactive_user { display: block; }
+
+div.clnavbox {
+	float: right;
+	margin: 0px 0px 20px 20px;
+	padding: 10px 10px;
+	background: #f9f9f9;
+	border: #ccc 1px solid;
+	max-width: 180px;
+}
+
+div.clnavbox p {
+	margin: 0px 0px 5px 0px;
+	font-family: "Trebuchet MS", verdana, sans-serif;
+	font-size: 100%;
+}
+
+img[title="Previous Page"], img[title="Next Page"] {
+	padding: 0px 4px;
+}
+
+#search form, #search input, #search td {
+	margin: 2px 0px;
+	font-size: 100%;
+}
+
+#search {
+	padding: 1px 0px 4px 0px;
+}
+
+#search form input[type="radio"] {
+	margin: 0px 3px 0px 0px;
+}
+
+#search input[type="text"] {
+	margin: 4px 0px 0px 0px;
+	/*padding-right: 20px;*/
+	width: 100%;
+	border: 1px solid #aaa;
+	background: #fff;
+}
+
+#search input[type="image"] {
+	margin: 0px;
+	padding: 0px;
+	position: relative;
+	top: 4px;
+	right: 22px;
+}
+
+#footer {
+	margin: 10px;
+	text-align: center;
+}
+

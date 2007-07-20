@@ -1,0 +1,45 @@
+
+                              svnLogBrowser
+                              =============
+
+Requirements
+------------
+
+- Webserver with PHP 4 or 5
+- MySQL
+- Python 2.4
+- MySQLdb (the python module)
+- Bash (sorry Windows users)
+- Commandline SVN Client
+
+The scripts are written in a way that it's possible to configure a secondary
+server to do the updates so the web frontend only requires MySQL and PHP.
+Though this isn't currently easy to setup, and isn't very efficient.
+
+Not-So-Quick Start
+------------------
+
+1. Setup a new MySQL database and user with access to that database.
+2. Run the SQL script provided (mysql.sql) on the new database to setup
+   the table structure.
+3. Edit the svnlog2xml.sh script, and configure the name to use for your
+   repository along with the URL to the SVN repository.
+4. Run svnlog2xml.sh. This will retrieve all the logs from your repository in
+   XML format up to the latest revision and save them locally. Make sure the
+   script is executable first. This may take a while to run depending on if
+   the SVN server is remote, and how many revisions there are.
+
+   $ chmod +x svnlog2xml.sh
+   $ ./svnlog2xml.sh
+
+5. Edit the svnxml2db.py script, and configure the name (using the same name
+   you used in svnlog2xml.sh) and MySQL database information.
+6. Run svnxml2db.py. This will parse the XML files retrieved with
+   svnlog2xml.sh and add them to the MySQL database. Make sure this script is
+   executable as well. This may also take a while to run depending on if the
+   MySQL database is remote, and how many revisions it needs to add.
+
+   $ chmod +x svnxml2db.py
+   $ ./svnxml2db.py
+
+7. 
