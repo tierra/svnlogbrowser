@@ -25,6 +25,8 @@ include("template.php");
 
 $template = new Template();
 
+$template->assign_var('STYLESHEET', $stylesheet);
+
 function anchor($location, $label, $onclick = '', $class = '')
 {
 	$anchor = "<a href=\"$location\"";
@@ -532,7 +534,7 @@ $template->assign_var('DEVCONTROL', $devcontrol);
 $time_end = microtime(true);
 $template->assign_var('PROCESSTIME', sprintf('%.5f', $time_end - $time_start));
 
-$template->set_filenames(array('index' => 'index.tpl'));
+$template->set_filenames(array('index' => $page_tpl));
 //printf("Page Generation Time: %02.5f Seconds", $time_end - $time_start);
 $template->pparse('index');
 

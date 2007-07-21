@@ -28,6 +28,9 @@ $changelogs[] = array(
 
 # These only need to be changed if you want to change the style.
 
+$stylesheet = 'style.css';
+$page_tpl = 'index.tpl';
+
 $icons = array(
 	'A' => '11-add.png',		# Added
 	'D' => '11-delete.png',		# Deleted

@@ -3,7 +3,7 @@
 <head>
   <title>{TYPE} SVN Changelog</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
-  <link rel="stylesheet" type="text/css" href="style.css" />
+  <link rel="stylesheet" type="text/css" href="{STYLESHEET}" />
   <link id="devsort_alpha" rel="stylesheet" href="devsort_alpha.css" />
   <link id="hide_inactive" rel="stylesheet" href="hide_inactive.css" />
   <script type="text/javascript">
@@ -52,8 +52,7 @@
   {DEVCONTROL}
 </div>
 
-<p>This changelog reflects changes in the
-<a href="http://www.wxwidgets.org/">wxWidgets</a> SVN repository, and is
+<p>This changelog reflects changes in the {TYPE} SVN repository, and is
 updated once every hour.  All reported times are in UTC.</p>
 
 <div style="margin: 15px 200px 15px 20px; text-align: center;"><div class="legend"><ul>
