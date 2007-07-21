@@ -300,7 +300,7 @@ while($commit = mysql_fetch_assoc($db_commits))
 						"r1={$previous_revision}&amp;r2={$commit['revision']}" .
 						"&amp;pathrev={$commit['revision']}", "diff");
 					$output .= ", " . anchor("{$changelog['viewvc']}{$row['path']}?" .
-						"view=log&amp;pathrev={$commit['revision']}", "log"). "]</span>";
+						"view=log&amp;pathrev={$commit['revision']}", "log");
 					break;
 				case 'D':
 					$previous_revision = $commit['revision'] - 1;
