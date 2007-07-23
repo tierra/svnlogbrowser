@@ -23,6 +23,9 @@ from xml.dom import minidom
 # This should be easily changed to use entirely different database types.
 import MySQLdb as dbapi
 
+prefix = sys.path[0]
+xmlpath = os.path.join(prefix, 'xml', name);
+
 try:
     db = dbapi.connect(host   = dbinfo['host'],
                        user   = dbinfo['username'],
@@ -32,14 +35,14 @@ except dbapi.Error, e:
     print "There was an error connecting to the database: %s" % e
     sys.exit()
 
-latest = int(file('xml/%s/latest' % name).read().strip())
+latest = int(file(os.path.join(xmlpath, 'latest').read().strip())
 commits = {}
 
 print "Parsing SVN XML log files..."
 count = 0
 
 # We step backwards through revisions adding the latest first.
-for filename in glob.glob('xml/%s/*.xml' % name):
+for filename in glob.glob(os.path.join(xmlpath, '*.xml')):
 
     try:
         doc = minidom.parse(filename)

@@ -20,6 +20,8 @@ INCREMENT=200
 
 echo "$NAME: $URL"
 
+PREFIX=`dirname $0`
+
 # Check that the SVN URL is valid and working.
 if ! svn --non-interactive info "$URL" 1> /dev/null; then
 	echo "Error retrieving information from the SVN repository."
@@ -34,11 +36,12 @@ latest=`svn --non-interactive info "$URL" | grep "^Revision:" | sed "s/.* //"`
 # Uncomment this for testing these scripts with small numbers of revisions.
 #latest=1500
 
-mkdir -p "xml/$NAME"
+XMLDIR="$PREFIX/xml/$NAME"
+mkdir -p "$XMLDIR"
 
 # If we've made a run before already, we'll continue from this revision.
-if [ -f "xml/$NAME/latest" ]; then
-    prior_update=`cat "xml/$NAME/latest"`
+if [ -f "$XMLDIR/latest" ]; then
+    prior_update=`cat "$XMLDIR/latest"`
     echo "Last revision retrieved: $prior_update"
     current=$((prior_update + 1))
 fi
@@ -57,7 +60,7 @@ while [ "$current" -le "$latest" ]; do
         exit 1
     fi
     filename=`printf "%08d" $current`
-    path="xml/$NAME/$filename.xml"
+    path="$XMLDIR/$filename.xml"
     if ! [ -f "$path" ]; then
         upperbound=$((current - 1 + INCREMENT))
         # Don't request more than are available
@@ -81,10 +84,9 @@ while [ "$current" -le "$latest" ]; do
     current=$((current + INCREMENT))
 done
 
-`echo "$latest" > "xml/$NAME/latest"`
+`echo "$latest" > "$XMLDIR/latest"`
 
 # If both steps can be done from the same machine, we might as well call the
-# second step here.
+# second step here if/when you have it configured.
 
-python svnxml2db.py
-
+#python "$PREFIX/svnxml2db.py"
