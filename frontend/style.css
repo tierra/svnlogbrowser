@@ -135,8 +135,10 @@ img[title="Previous Page"], img[title="Next Page"] {
 	padding: 1px 0px 4px 0px;
 }
 
-#search form input[type="radio"] {
-	margin: 0px 3px 0px 0px;
+#search select {
+	border: 1px solid #aaa;
+	margin: 0px 0px 3px 0px;
+	width: 100%;
 }
 
 #search input[type="text"] {

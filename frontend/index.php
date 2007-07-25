@@ -6,7 +6,9 @@
 if(!file_exists('config.php'))
 	die('Please copy "config.php.dist" to "config.php" and change your settings as needed.');
 
-require('config.php');
+require_once('config.php');
+require_once('functions.php');
+require_once("template.php");
 
 // GET Var	Description
 // ------------------------------------------------------------------
@@ -14,38 +16,15 @@ require('config.php');
 // "p"		Current page.
 // "c"		Number of changes per page.
 // "s"		File summary setting.
-// "r"		Search range (logs, files, or both)
+// "r"		Search range (logs, files, either, or both)
 // "q"		Search query.
 // "d"		Only show these developers' changes.
 // "a"		Show only active devs (filter selection, not commits)
 
 $time_start = microtime(true);
 
-include("template.php");
-
 $template = new Template();
-
 $template->assign_var('STYLESHEET', $stylesheet);
-
-function anchor($location, $label, $onclick = '', $class = '')
-{
-	$anchor = "<a href=\"$location\"";
-	if($onclick != '')
-		$anchor .= " onclick=\"$onclick\"";
-	if($class != '')
-		$anchor .= " class=\"$class\"";
-	$anchor .= ">$label</a>";
-	return $anchor;
-}
-
-function image($src, $alt = '', $title = '')
-{
-	$image = "<img src=\"images/$src\" alt=\"$alt\"";
-	if($title != '')
-		$image .= " title=\"$title\"";
-	$image .= " />";
-	return $image;
-}
 
 foreach($icons as $action => $image)
 	$template->assign_var('ICON_' . $action, $image);
@@ -63,7 +42,7 @@ $defaults['p'] = 1;
 $defaults['c'] = CHANGELOG_MIN_PER_PAGE;
 $defaults['s'] = 1; // Update below if changed.
 $defaults['q'] = '';
-$defaults['r'] = 3;
+$defaults['r'] = 3; // Search either files or logs by default
 $defaults['d'] = array();
 
 $clv['t'] = $defaults['t'];
@@ -76,6 +55,7 @@ if(isset($_GET['t']))
 
 $changelog = $changelogs[$clv['t']];
 $template->assign_var('TYPE', $changelog['title']);
+$template->assign_var('TYPENUM', $clv['t']);
 
 // Now that we know the type, we can setup the database connection.
 
@@ -106,7 +86,7 @@ $clv['r'] = $defaults['r'];
 if(isset($_GET['r']))
 {
 	$numeric = (int)$_GET['r'];
-	if(1 <= $numeric && $numeric <= 3)
+	if(1 <= $numeric && $numeric <= 4)
 		$clv['r'] = $numeric;
 }
 
@@ -176,24 +156,55 @@ if(isset($_GET['p']))
 // Do the actual query for the revisions requested and adjust the revision count.
 $num_revisions = 0;
 $db_where_expr = '';
-for($x = 0; $x < count($clv['d']); $x++)
+$db_join_expr = '';
+
+// Filter developers as necessary
+if(count($clv['d']) > 0)
 {
-	$db_where_expr .= "author = '{$clv['d'][$x]}'";
-	if($x + 1 != count($clv['d']))
-		$db_where_expr .= " OR ";
+	if(count($clv['d']) > 1) $db_where_expr .= "(";
+	for($x = 0; $x < count($clv['d']); $x++)
+	{
+		$db_where_expr .= "author = '{$clv['d'][$x]}'";
+		if($x + 1 != count($clv['d']))
+			$db_where_expr .= " OR ";
+	}
+	if(count($clv['d']) > 1) $db_where_expr .= ")";
+	$dev_filter_active = true;
 }
+
+// Run search if requested
 if($clv['q'] != '')
 {
-	// TODO: Handle search queries
-
-//	if($clv['r'] == 1 || $clv['r'] == 2)
-//		$db_where_expr .= " MATCH(path";
+	if($dev_filter_active) $db_where_expr .= " AND";
+	$files = "MATCH(path, copy_path) AGAINST('{$clv['q']}' IN BOOLEAN MODE)";
+	$logs = "MATCH(message) AGAINST('{$clv['q']}' IN BOOLEAN MODE)";
+	$join = "RIGHT JOIN changes ON changes.revision = commits.revision";
+	switch($clv['r'])
+	{
+	case 1:
+		$db_join_expr = $join;
+		$db_where_expr .= " " . $files;
+		break;
+	case 2:
+		$db_where_expr .= " " .$logs;
+		break;
+	case 3:
+		$db_join_expr = $join;
+		$db_where_expr .= " ($files OR $logs)";
+		break;
+	case 4:
+		$db_join_expr = $join;
+		$db_where_expr .= " ($files AND $logs)";
+		break;
+	}
 }
+
 $db_offset = ($clv['p'] - 1) * $clv['c'];
 if($db_where_expr != '') $db_where_expr = "WHERE $db_where_expr";
-$db_query = "SELECT SQL_CALC_FOUND_ROWS * FROM commits $db_where_expr ORDER BY date DESC";
+$db_query = "SELECT SQL_CALC_FOUND_ROWS commits.* FROM commits $db_join_expr $db_where_expr " .
+	    "GROUP BY commits.revision ORDER BY commits.revision DESC";
 $db_limit = " LIMIT $db_offset, {$clv['c']}";
-//echo "Query: $db_query\n\n";
+//echo "Query: $db_query$db_limit\n\n";
 $db_commits = mysql_query($db_query . $db_limit);
 if($db_commits !== false)
 	$num_revisions = mysql_num_rows($db_commits);
@@ -222,45 +233,7 @@ if($clv['p'] > $pagecount)
 
 $template->assign_var('LINECOUNT', number_format($total_revisions));
 
-$sep = $changelog['pathsep'];
-$pathsep = $sep;
-if($sep == '\\') $sep = '\\\\';
-$preg_trunk  = "%^{$changelog['trunk']}(.*)$%";
-$preg_branch = "%^{$changelog['branches']}$sep([^$sep]+)(.*)$%";
-$preg_tag    = "%^{$changelog['tags']}$sep([^$sep]+)(.*)$%";
-
-function svnlog_format_path($path, $action = '')
-{
-	global $pathsep;
-	global $preg_trunk, $preg_branch, $preg_tag;
-
-	$xhtml = ''; $clean_path = '';
-	
-	if(preg_match($preg_trunk, $path, $matches))
-		$clean_path = $matches[1];
-	else if(preg_match($preg_branch, $path, $matches))
-	{
-		$text .= "<span class=\"branch\">[{$matches[1]}]</span>&nbsp;";
-		$clean_path = $matches[2];
-	}
-	else if(preg_match($preg_tag, $path, $matches))
-	{
-		$text .= "<span class=\"tag\">[{$matches[1]}]</span>&nbsp;";
-		$clean_path = $matches[2];
-	}
-	
-	if($clean_path == '') $clean_path = $pathsep;
-	
-	if($action == '')
-		$text .= "{$clean_path}";
-	else
-		$text .= "<span class=\"{$action}\">{$clean_path}</span>";
-
-	return $text;
-}
-
 $output = "<dl>\n";
-$commit_summary_id = 0;
 while($commit = mysql_fetch_assoc($db_commits))
 {
 	$output .= "  <dt>";
@@ -281,62 +254,16 @@ while($commit = mysql_fetch_assoc($db_commits))
 		if($clv['s'] == 1 && $num_changes > $changelog['file_summary_limit'])
 		{
 			$output .= "      " . anchor("javascript:;", "Click to show all " . number_format($num_changes) . " changes...",
-				"this.className='hidden';document.getElementById('csi{$commit_summary_id}').className='shown';", "shown");
-			$output .= "<span id=\"csi{$commit_summary_id}\" class=\"hidden\">\n";
+				"this.className='hidden';document.getElementById('csi{$commit['revision']}').className='shown';showChanges({$commit['revision']});", "shown");
+			$output .= "<span id=\"csi{$commit['revision']}\" class=\"hidden\">Loading...</span>\n";
 		}
-		while($row = mysql_fetch_assoc($changes))
+		else
 		{
-			$path = $row['path']; $matches = array();
-			$output .= "      " . image($icons[$row['action']], $row['action']) . "&nbsp;&nbsp;";
-			$output .= svnlog_format_path($path, $row['action']);
-			if($changelog['viewvc'] != '')
+			while($row = mysql_fetch_assoc($changes))
 			{
-				$output .= "&nbsp;&nbsp;<span class=\"ext_links\">[";
-				switch($row['action'])
-				{
-				case 'M':
-					$previous_revision = $commit['revision'] - 1;
-					$output .= anchor("{$changelog['viewvc']}{$row['path']}?" .
-						"r1={$previous_revision}&amp;r2={$commit['revision']}" .
-						"&amp;pathrev={$commit['revision']}", "diff");
-					$output .= ", " . anchor("{$changelog['viewvc']}{$row['path']}?" .
-						"view=log&amp;pathrev={$commit['revision']}", "log");
-					break;
-				case 'D':
-					$previous_revision = $commit['revision'] - 1;
-					$output .= anchor("{$changelog['viewvc']}{$row['path']}?view=log" .
-						"&amp;pathrev={$previous_revision}", "old log");
-					break;
-				default: // 'A' and 'R' are basically the same for needed links.
-					$output .= anchor("{$changelog['viewvc']}{$row['path']}?view=log" .
-						"&amp;pathrev={$commit['revision']}", "log");
-					break;
-				}
-				if($changelog['svn'] != '')
-					$output .= ", " . anchor("{$changelog['svn']}{$row['path']}", "file");
-				$output .= "]</span>";
+				$output .= svnlog_format_change($commit['revision'], $row['action'], $row['path'],
+												$row['copy_path'], $row['copy_revision']);
 			}
-			else if($changelog['svn'] != '')
-			{
-				$output .= "&nbsp;&nbsp;<span class=\"ext_links\">[";
-				$output .= anchor("{$changelog['svn']}{$row['path']}", "file");
-				$output .= "]</span>";
-			}
-			if($row['copy_path'] != '')
-			{
-				if($changelog['viewvc'] != '')
-					$output .= "&nbsp;&nbsp;(copied from " . anchor("{$changelog['viewvc']}{$row['copy_path']}?" .
-						"view=log&amp;pathrev={$row['copy_revision']}", "r{$row['copy_revision']}") . " of ";
-				else
-					$output .= "&nbsp;&nbsp;(copied from r{$row['copy_revision']} of ";
-				$output .= svnlog_format_path($row['copy_path']) . ")";
-			}
-			$output .= "<br />\n";
-		}
-		if($clv['s'] == 1 && $num_changes > $changelog['file_summary_limit'])
-		{
-			$output .= "      </span>\n";
-			$commit_summary_id++;
 		}
 		$output .= "    </p>\n";
 	}
@@ -459,22 +386,27 @@ foreach(get_query(array('q' => $defaults['q'], 'r' => $defaults['r'], 'p' => 1),
 	$hiddenvars .= '<input type="hidden" name="' . $name . '" value="' . $value . '"/>';
 $template->assign_var('SEARCHQV', $hiddenvars);
 
-$searchmethod = '';
+$searchmethod = '<select name="r">';
 if($clv['r'] == 1)
-	$searchmethod .= '<input type="radio" name="r" value="1" id="search_files" checked="checked" /><label for="search_files">Files</label>';
+	$searchmethod .= '<option value="1" selected="selected">Files</option>';
 else
-	$searchmethod .= '<input type="radio" name="r" value="1" id="search_files" /><label for="search_files">Files</label>';
+	$searchmethod .= '<option value="1">Files</option>';
 if($clv['r'] == 2)
-	$searchmethod .= ' <input type="radio" name="r" value="2" id="search_logs" checked="checked" /><label for="search_logs">Logs</label>';
+	$searchmethod .= '<option value="2" selected="selected">Logs</option>';
 else
-	$searchmethod .= ' <input type="radio" name="r" value="2" id="search_logs" /><label for="search_logs">Logs</label>';
+	$searchmethod .= '<option value="2">Logs</option>';
 if($clv['r'] == 3)
-	$searchmethod .= ' <input type="radio" name="r" value="3" id="search_both" checked="checked" /><label for="search_both">Both</label>';
+	$searchmethod .= '<option value="3" selected="selected">Files or Logs</option>';
 else
-	$searchmethod .= ' <input type="radio" name="r" value="3" id="search_both" /><label for="search_both">Both</label>';
+	$searchmethod .= '<option value="3">Files or Logs</option>';
+if($clv['r'] == 4)
+	$searchmethod .= '<option value="4" selected="selected">Files and Logs</option>';
+else
+	$searchmethod .= '<option value="4">Files and Logs</option>';
+$searchmethod .= '</select>';
 $template->assign_var('SEARCHRANGE', $searchmethod);
 
-$template->assign_var('SEARCHQUERY', $clv['q']);
+$template->assign_var('SEARCHQUERY', htmlentities(stripslashes($_GET['q'])));
 
 
 $devcontrol = '';

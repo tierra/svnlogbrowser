@@ -7,6 +7,39 @@
   <link id="devsort_alpha" rel="stylesheet" href="devsort_alpha.css" />
   <link id="hide_inactive" rel="stylesheet" href="hide_inactive.css" />
   <script type="text/javascript">
+	<!--
+	function showChanges(revision) {
+		var request;
+		try {
+			// Opera 8.0+, Firefox, Safari
+			request = new XMLHttpRequest();
+		} catch (e) {
+			// Internet Explorer Browsers
+			try{
+				request = new ActiveXObject("Msxml2.XMLHTTP");
+			} catch (e) {
+				try{
+					request = new ActiveXObject("Microsoft.XMLHTTP");
+				} catch (e) {
+					// Something went wrong
+					alert("Your browser doesn't support this, sorry.");
+					return false;
+				}
+			}
+		}
+		request.onreadystatechange = function() {
+			if(request.readyState == 4) {
+				id = "csi" + revision;
+				element = document.getElementById(id);
+				element.innerHTML = request.responseText;
+			}
+		}
+		request.open("GET", "changes.php?t={TYPENUM}&r=" + revision, true);
+		request.send(null);
+	}
+	-->
+  </script>
+  <script type="text/javascript">
     function enableStyle(id, enabled) {
       var sheet = document.getElementById(id);
       if(sheet) sheet.disabled = (!enabled); }
