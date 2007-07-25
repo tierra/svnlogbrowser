@@ -336,12 +336,11 @@ if($clv['p'] > 4)
 }
 if($clv['p'] > 2)
 	$pagenav .= get_pn_link($clv['p'] - 2);
-// These aren't needed with the previous and next page links.
-//if($clv['p'] > 1)
-//	$pagenav .= get_pn_link($clv['p'] - 1);
+if($clv['p'] > 1)
+	$pagenav .= get_pn_link($clv['p'] - 1);
 $pagenav .= $clv['p'] . ' ';
-//if($clv['p'] < $pagecount)
-//	$pagenav .= get_pn_link($clv['p'] + 1);
+if($clv['p'] < $pagecount)
+	$pagenav .= get_pn_link($clv['p'] + 1);
 if($clv['p'] < ($pagecount - 1))
 	$pagenav .= get_pn_link($clv['p'] + 2);
 if($clv['p'] < ($pagecount - 3))
