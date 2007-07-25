@@ -22,7 +22,7 @@
 					request = new ActiveXObject("Microsoft.XMLHTTP");
 				} catch (e) {
 					// Something went wrong
-					alert("Your browser doesn't support this, sorry.");
+					alert("Your browser doesn't support this, sorry. Please turn off file summaries to view these changes.");
 					return false;
 				}
 			}
@@ -68,9 +68,9 @@
   <div id="search"><form method="get" action="">
     {SEARCHQV}
     <table border="0" cellpadding="0" cellspacing="0">
-      <tr><td nowrap="nowrap">{SEARCHRANGE}</td></tr>
-      <tr><td width="100%" nowrap="nowrap"><input type="text" style="width: 100%;" name="q" id="q" size="10" maxlength="128" value="{SEARCHQUERY}"/>
-        <input type="image" src="images/magnifier.png" name="qs" value=""/></td></tr>
+      <tr><td colspan="2">{SEARCHRANGE}</td></tr>
+      <tr><td nowrap="nowrap"><input type="text" name="q" id="q" size="16" maxlength="128" value="{SEARCHQUERY}"/></td>
+          <td style="text-align: right; width: 20px;" valign="middle"><input type="image" src="images/magnifier.png" name="qs" value=""/></td></tr>
     </table>
   </form></div>
   <h3>Filter by Developer:</h3>

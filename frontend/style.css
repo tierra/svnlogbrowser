@@ -137,24 +137,19 @@ img[title="Previous Page"], img[title="Next Page"] {
 
 #search select {
 	border: 1px solid #aaa;
-	margin: 0px 0px 3px 0px;
+	margin: 0px 0px 4px 0px;
 	width: 100%;
 }
 
 #search input[type="text"] {
-	margin: 4px 0px 0px 0px;
+	margin: 0px;
 	/*padding-right: 20px;*/
-	width: 100%;
 	border: 1px solid #aaa;
 	background: #fff;
 }
 
 #search input[type="image"] {
-	margin: 0px;
-	padding: 0px;
-	position: relative;
-	top: 4px;
-	right: 22px;
+	margin: 0px 0px 0px 4px;
 }
 
 #footer {
