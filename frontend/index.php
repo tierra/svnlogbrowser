@@ -255,7 +255,7 @@ while($commit = mysql_fetch_assoc($db_commits))
 		{
 			$output .= "      " . anchor("javascript:;", "Click to show all " . number_format($num_changes) . " changes...",
 				"this.className='hidden';document.getElementById('csi{$commit['revision']}').className='shown';showChanges({$commit['revision']});", "shown");
-			$output .= "<span id=\"csi{$commit['revision']}\" class=\"hidden\">Loading...</span>\n";
+			$output .= "<span id=\"csi{$commit['revision']}\" class=\"hidden\">" . image("loading.gif", "Loading") . "</span>\n";
 		}
 		else
 		{
