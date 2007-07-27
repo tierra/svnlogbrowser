@@ -26,6 +26,9 @@ $changelogs[] = array(
 	'patches'	=> ''
 );
 
+// Additional changelogs can be added by copying the above structure...
+// $changelogs[] = array( ... );
+
 # These only need to be changed if you want to change the style.
 
 $stylesheet = 'style.css';

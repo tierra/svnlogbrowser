@@ -35,7 +35,7 @@ except dbapi.Error, e:
     print "There was an error connecting to the database: %s" % e
     sys.exit()
 
-latest = int(file(os.path.join(xmlpath, 'latest').read().strip())
+latest = int(file(os.path.join(xmlpath, 'latest')).read().strip())
 commits = {}
 
 print "Parsing SVN XML log files..."
@@ -120,6 +120,10 @@ for commit in commits.values():
     try:
         cursor.execute('INSERT INTO commits (revision, author, date, message) VALUES (%s, %s, %s, %s)',
                        (commit['revision'], commit['author'], commit_date, commit['message']))
+        if cursor.rowcount != 1:
+            # If this commit was possibly already added, don't duplicate changes.
+            db.rollback()
+            continue
     except dbapi.DatabaseError, e:
         print "Error adding commit to database: %s" % e
         db.rollback()
