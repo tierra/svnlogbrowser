@@ -75,7 +75,6 @@ for filename in glob.glob(os.path.join(xmlpath, '*.xml')):
                     path['copyfrom_revision'] = None
                 paths.append(path)
             logentry['paths']    = paths
-            logentry['message']  = xmllog.getElementsByTagName('msg')[0].firstChild.data
         except IndexError:
             if revision is not -1:
                 print 'Failed parsing XML for revision %d in "%s"!' % (revision, filename)
@@ -83,6 +82,12 @@ for filename in glob.glob(os.path.join(xmlpath, '*.xml')):
                 print 'Failed parsing unknown XML logentry in file "%s"!' % filename
             continue
 
+        try:
+            # Log message is optional (shame on anyone committing without one).
+            logentry['message']  = xmllog.getElementsByTagName('msg')[0].firstChild.data
+        except:
+            logentry['message']  = ''
+        
         try:
             # Apparently, author is optional and happens with repositories
             # converted from CVS with cvs2svn.
