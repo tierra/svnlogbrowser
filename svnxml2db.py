@@ -27,10 +27,11 @@ prefix = sys.path[0]
 xmlpath = os.path.join(prefix, 'xml', name);
 
 try:
-    db = dbapi.connect(host   = dbinfo['host'],
-                       user   = dbinfo['username'],
-                       passwd = dbinfo['password'],
-                       db     = dbinfo['database'])
+    db = dbapi.connect(host    = dbinfo['host'],
+                       user    = dbinfo['username'],
+                       passwd  = dbinfo['password'],
+                       db      = dbinfo['database'],
+                       charset = 'utf8')
 except dbapi.Error, e:
     print "There was an error connecting to the database: %s" % e
     sys.exit()
