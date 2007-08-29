@@ -70,15 +70,16 @@ while [ "$current" -le "$latest" ]; do
         echo "Fetching revisions $current to $upperbound."
         if ! svn --non-interactive --verbose --xml log -r $upperbound:$current "$URL" > "$path"; then
             echo "Failed to retrieve logs from revision $current to $upperbound!"
-            echo "Testing each revision individually for debug:"
-            rm "$path"
-            j=$current
-            while [ $j -le $upperbound ]; do
-                svn --verbose --xml log -r $j "$URL" > /dev/null
-                j=$((j + 1))
-            done
-            echo "Done testing."
-            exit
+            rm "$filename"
+            #echo "Testing each revision individually for debug:"
+            #rm "$path"
+            #j=$current
+            #while [ $j -le $upperbound ]; do
+            #    svn --verbose --xml log -r $j "$URL" > /dev/null
+            #    j=$((j + 1))
+            #done
+            #echo "Done testing."
+            #exit
         fi
     fi
     current=$((current + INCREMENT))
