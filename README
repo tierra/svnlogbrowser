@@ -1,45 +1,94 @@
 
-                              svnLogBrowser
-                              =============
+                                 svnLogBrowser
+                                 =============
 
 Requirements
 ------------
 
-- Webserver with PHP 4 or 5
+- Webserver with PHP 4.3.0+ or 5
 - MySQL
 - Python 2.4
-- MySQLdb (the python module)
-- Bash (sorry Windows users)
-- Commandline SVN Client
+- Python Modules: MySQLdb, pysvn
 
-The scripts are written in a way that it's possible to configure a secondary
-server to do the updates so the web frontend only requires MySQL and PHP.
-Though this isn't currently easy to setup, and isn't very efficient.
-
-Not-So-Quick Start
-------------------
+Quick Start
+-----------
 
 1. Setup a new MySQL database and user with access to that database.
-2. Run the SQL script provided (mysql.sql) on the new database to setup
-   the table structure.
-3. Edit the svnlog2xml.sh script, and configure the name to use for your
-   repository along with the URL to the SVN repository.
-4. Run svnlog2xml.sh. This will retrieve all the logs from your repository in
-   XML format up to the latest revision and save them locally. Make sure the
-   script is executable first. This may take a while to run depending on if
-   the SVN server is remote, and how many revisions there are.
+2. Edit the 'slb-update.py' script, and configure the database credentials.
+3. Move the 'frontend' folder to the location on your website you would like
+   users to access the logs.
+4. In your frontend folder, move 'config.php.dist' to 'config.php', and edit
+   'config.php', adding in the database credentials. (this is done once for
+   update script, and once for the web frontend)
+5. Point your browser at http://example.com/path/to/slb/setup.php to configure
+   svnLogBrowser. See the "Configuration" section for details on settings.
+6. Run 'slb-update.py' to make the first update. Keep in mind that this can
+   take a long time for large repositories, be patient.
 
-   $ chmod +x svnlog2xml.sh
-   $ ./svnlog2xml.sh
+   $ python slb-update.py
 
-5. Edit the svnxml2db.py script, and configure the name (using the same name
-   you used in svnlog2xml.sh) and MySQL database information.
-6. Run svnxml2db.py. This will parse the XML files retrieved with
-   svnlog2xml.sh and add them to the MySQL database. Make sure this script is
-   executable as well. This may also take a while to run depending on if the
-   MySQL database is remote, and how many revisions it needs to add.
+7. Go back to the setup.php page, and add any developer's names you wish to
+   display, then lock out access to the setup.php page. The page may require
+   the password to edit anything, but it is not secure.
 
-   $ chmod +x svnxml2db.py
-   $ ./svnxml2db.py
+   $ chmod 000 setup.php
 
-7. 
+8. Edit your crontab, and add the slb-update.py script to run however often
+   you want it to update your changelogs.
+
+Introduction
+------------
+
+There are two individual parts of svnLogBrowser that need to work together to
+bring users the latest changes. The first is the frontend which consists of
+all the PHP scripts for browsing changes, and changing settings. The second is
+the Python 'slb-update.py' script, which is built to run periodically from
+cron which reads the latest commits from the SVN repository, and adds them to
+the database for quick retrieval and searching.
+
+The scripts are written in a way that it's possible to configure a secondary
+server to do the updates so the web frontend only requires MySQL and PHP, but
+it is more efficient to run the update script on the same server as MySQL.
+
+Once the first update has been made, subsequent updates will only retrieve
+logs for new commits. So after you've made the first pass, updates will
+usually only take a few seconds. If you don't like the interval of time when
+commits have been made, but aren't shown in the frontend, you could even add
+the update script into the commit hooks for the SVN repository if you have
+the appropriate access. (instructions not given)
+
+Configuration
+-------------
+
+This section outlines what each of the changelog settings are for.
+
+Name:
+   This is the displayed name for the changelog, simple enough.
+
+Table Prefix:
+   Each of your changelogs use individual tables in the database to ease the
+   stress of searches and administration. The name of the tables used will be
+   prefixed with this setting. These must be unique between changelogs.
+
+SVN URL:
+   This should be the URL to the SVN repository you want to watch logs from.
+   You can use any of the standard URI that Subversion supports. Any of
+   "svn://", "http://", and "https://" will work. If you use a HTTP based URL,
+   svnLogBrowser will automatically link to the files in the browser so users
+   can take a look at the whole file in question.
+
+Summary Limit:
+   If any one commit contains more than the given number of changes here, then
+   they will be hidden from the user by default with a link the user must
+   click to see them. This is overridden if the user has turned off file
+   summarizing. This functionality helps prevent PHP memory limit problems and
+   also speeds up page load times significantly for some requests since the
+   changes aren't actually generated, sent to the browser, and rendered until
+   the user clicks the link. 10 changes is a good default setting for most.
+
+Trunk, Tags, and Branches:
+
+
+Diff URL:
+
+
