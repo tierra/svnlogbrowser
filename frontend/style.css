@@ -52,6 +52,23 @@ p, pre {
 	margin: 5px;
 }
 
+#scontent table {
+    margin: 10px auto;
+    background: #CCCCCC;
+}
+
+th {
+    background: #EEEEEE;
+}
+
+td {
+    background: #F9F9F9;
+}
+
+label {
+    text-align: right;
+}
+
 span[class="A"] { color: #008000; }
 span[class="D"] { color: #C00000; }
 span[class="M"] { color: #000000; }
@@ -141,9 +158,9 @@ img[title="Previous Page"], img[title="Next Page"] {
 	width: 100%;
 }
 
-#search input[type="text"] {
+input[type="text"], input[type="password"] {
 	margin: 0px;
-	/*padding-right: 20px;*/
+	padding: 1px 2px;
 	border: 1px solid #aaa;
 	background: #fff;
 }
@@ -157,3 +174,15 @@ img[title="Previous Page"], img[title="Next Page"] {
 	text-align: center;
 }
 
+#scontent {
+	margin: 20px auto;
+	text-align: center;
+}
+
+#scontent img {
+    margin: 0px 5px !important;
+}
+
+div.error_msg {
+	color: red;
+}

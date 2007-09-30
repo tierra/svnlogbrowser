@@ -6,6 +6,8 @@
 if(!file_exists('config.php'))
 	die('Please copy "config.php.dist" to "config.php" and change your settings as needed.');
 
+$time_start = microtime(true);
+
 require_once('config.php');
 require_once('functions.php');
 require_once("template.php");
@@ -21,7 +23,8 @@ require_once("template.php");
 // "d"		Only show these developers' changes.
 // "a"		Show only active devs (filter selection, not commits)
 
-$time_start = microtime(true);
+if(count($changelogs) < 1)
+    die('No changelogs have been configured, please run setup.');
 
 $template = new Template();
 $template->assign_var('STYLESHEET', $stylesheet);
@@ -37,7 +40,7 @@ $clv = array();
 // Initialize all settings...
 // (set defaults where needed while validating input)
 
-$defaults['t'] = 0;
+$defaults['t'] = 1;
 $defaults['p'] = 1;
 $defaults['c'] = CHANGELOG_MIN_PER_PAGE;
 $defaults['s'] = 1; // Update below if changed.
@@ -50,31 +53,20 @@ if(isset($_GET['t']))
 {
     $clv['t'] = (int)$_GET['t'];
     if(!isset($changelogs[$clv['t']]))
-        $clv['t'] = 0;
+        $clv['t'] = $defaults['t'];
 }
 
 $changelog = $changelogs[$clv['t']];
 $template->assign_var('TYPE', $changelog['title']);
 $template->assign_var('TYPENUM', $clv['t']);
 
-// Now that we know the type, we can setup the database connection.
-
-$db = mysql_connect($changelog['host'], $changelog['username'], $changelog['password'])
-	or die("<br>Could not connect to the MySQL Server!\n");
-
-mysql_select_db($changelog['database'], $db)
-	or die("<br>Could not select the MySQL database \"$qp_mysql_database\"!\n");
-
-// Lets us correctly read UTF-8 columns
-mysql_query("SET NAMES 'utf8'");
-
 $devs = array();
-$result = mysql_query("SELECT * FROM authors WHERE username != ''
-		       $condition ORDER BY commits DESC");
+$result = mysql_query("SELECT * FROM ${changelog['authors_table']}
+                       WHERE username != '' ORDER BY commits DESC");
 while($row = mysql_fetch_assoc($result))
 {
 	$devs[$row['username']] = array(
-		'name' => $row['fullname'],
+		'name' => stripslashes(htmlentities($row['fullname'])),
 		'changes' => $row['commits'],
 		'active' => $row['active']
 	);
@@ -139,7 +131,8 @@ if(isset($_GET['c']))
 // we can save a few CPU cycles in case the page request was higher
 // than the max page on a default view with nothing filtered.
 
-$row = mysql_fetch_row(mysql_query("SELECT COUNT(revision) FROM commits"));
+$row = mysql_fetch_row(mysql_query(
+    "SELECT COUNT(revision) FROM ${changelog['commits_table']}"));
 $total_revisions = $row[0];
 $pagecount = ceil($total_revisions / $clv['c']);
 
@@ -178,7 +171,8 @@ if($clv['q'] != '')
 	if($dev_filter_active) $db_where_expr .= " AND";
 	$files = "MATCH(path, copy_path) AGAINST('{$clv['q']}' IN BOOLEAN MODE)";
 	$logs = "MATCH(message) AGAINST('{$clv['q']}' IN BOOLEAN MODE)";
-	$join = "RIGHT JOIN changes ON changes.revision = commits.revision";
+	$join = "RIGHT JOIN ${changelog['changes_table']} ON " .
+	        "${changelog['changes_table']}.revision = ${changelog['commits_table']}.revision";
 	switch($clv['r'])
 	{
 	case 1:
@@ -201,8 +195,10 @@ if($clv['q'] != '')
 
 $db_offset = ($clv['p'] - 1) * $clv['c'];
 if($db_where_expr != '') $db_where_expr = "WHERE $db_where_expr";
-$db_query = "SELECT SQL_CALC_FOUND_ROWS commits.* FROM commits $db_join_expr $db_where_expr " .
-	    "GROUP BY commits.revision ORDER BY commits.revision DESC";
+$db_query = "SELECT SQL_CALC_FOUND_ROWS ${changelog['commits_table']}.* " .
+            "FROM ${changelog['commits_table']} $db_join_expr $db_where_expr " .
+            "GROUP BY ${changelog['commits_table']}.revision " .
+            "ORDER BY ${changelog['commits_table']}.revision DESC";
 $db_limit = " LIMIT $db_offset, {$clv['c']}";
 //echo "Query: $db_query$db_limit\n\n";
 $db_commits = mysql_query($db_query . $db_limit);
@@ -244,14 +240,15 @@ while($commit = mysql_fetch_assoc($db_commits))
 
 	$output .= "  <dd>\n";
 
-	$changes = mysql_query("SELECT * FROM changes WHERE revision = {$commit['revision']} ORDER BY path");
+	$changes = mysql_query("SELECT * FROM ${changelog['changes_table']} " .
+	                       "WHERE revision = {$commit['revision']} ORDER BY path");
 	if($changes === false)
 		$output .= "    <p>No changes found for this commit.</p>\n";
 	else
 	{
 		$output .= "    <p>\n";
 		$num_changes = mysql_num_rows($changes);
-		if($clv['s'] == 1 && $num_changes > $changelog['file_summary_limit'])
+		if($clv['s'] == 1 && $num_changes > $changelog['summary_limit'])
 		{
 			$output .= "      " . anchor("javascript:;", "Click to show all " . number_format($num_changes) . " changes...",
 				"this.className='hidden';document.getElementById('csi{$commit['revision']}').className='shown';showChanges({$commit['revision']});", "shown");

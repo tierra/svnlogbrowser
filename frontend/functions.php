@@ -69,34 +69,34 @@ function svnlog_format_change($revision, $action, $path, $copy_path = '', $copy_
 
 	$output .= "      " . image($icons[$action], $action) . "&nbsp;&nbsp;";
 	$output .= svnlog_format_path($path, $action);
-	if($changelog['viewvc'] != '')
+	if($changelog['diff_url'] != '')
 	{
 		$output .= "&nbsp;&nbsp;<span class=\"ext_links\">[";
 		switch($action)
 		{
 		case 'M':
 			$previous_revision = $revision - 1;
-			$output .= anchor("{$changelog['viewvc']}{$path}?" .
+			$output .= anchor("{$changelog['diff_url']}{$path}?" .
 				"r1={$previous_revision}&amp;r2={$revision}" .
 				"&amp;pathrev={$revision}", "diff");
-			$output .= ", " . anchor("{$changelog['viewvc']}{$path}?" .
+			$output .= ", " . anchor("{$changelog['diff_url']}{$path}?" .
 				"view=log&amp;pathrev={$revision}", "log");
 			break;
 		case 'D':
 			$previous_revision = $revision - 1;
-			$output .= anchor("{$changelog['viewvc']}{$path}?view=log" .
+			$output .= anchor("{$changelog['diff_url']}{$path}?view=log" .
 				"&amp;pathrev={$previous_revision}", "old log");
 			break;
 		default: // 'A' and 'R' are basically the same for needed links.
-			$output .= anchor("{$changelog['viewvc']}{$path}?view=log" .
+			$output .= anchor("{$changelog['diff_url']}{$path}?view=log" .
 				"&amp;pathrev={$revision}", "log");
 			break;
 		}
-		if($changelog['svn'] != '')
+		if($changelog['link_files'])
 			$output .= ", " . anchor("{$changelog['svn']}{$path}", "file");
 		$output .= "]</span>";
 	}
-	else if($changelog['svn'] != '')
+	else if($changelog['link_files'])
 	{
 		$output .= "&nbsp;&nbsp;<span class=\"ext_links\">[";
 		$output .= anchor("{$changelog['svn']}{$path}", "file");
@@ -104,8 +104,8 @@ function svnlog_format_change($revision, $action, $path, $copy_path = '', $copy_
 	}
 	if($copy_path != '')
 	{
-		if($changelog['viewvc'] != '')
-			$output .= "&nbsp;&nbsp;(copied from " . anchor("{$changelog['viewvc']}{$copy_path}?" .
+		if($changelog['diff_url'] != '')
+			$output .= "&nbsp;&nbsp;(copied from " . anchor("{$changelog['diff_url']}{$copy_path}?" .
 				"view=log&amp;pathrev={$copy_revision}", "r{$copy_revision}") . " of ";
 		else
 			$output .= "&nbsp;&nbsp;(copied from r{$copy_revision} of ";
