@@ -89,7 +89,7 @@ span[class="R"] { color: #6000BF; }
 .hidden { display: none; }
 .shown  { display: block; }
 
-div.legend {
+div.legend, div.filters {
 	margin: 0px auto;
 	padding: 3px 6px;
 	width: 80%;
@@ -97,14 +97,19 @@ div.legend {
 	background: #F9F9F9;
 }
 
-div.legend ul {
+div.legend ul, div.filters ul {
 	margin: 0px;
 	padding: 0px;
 }
 
-div.legend li {
+div.legend li, div.filters li {
 	margin: 0px 3px;
 	display: inline;
+}
+
+div.filters {
+	border: 1px #DDB solid;
+	background: #F9F9D9;
 }
 
 #devcontrol {

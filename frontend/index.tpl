@@ -98,6 +98,8 @@ updated once every hour.  All reported times are in UTC.</p>
   <li><span class="tag">[Tag]</span></li>
 </ul></div></div>
 
+{FILTERS}
+
 <div class="changelog">
 <h2>Changelog for {TYPE} ({LINECOUNT} revisions):</h2>
 {CHANGELOG}

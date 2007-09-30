@@ -402,7 +402,7 @@ else
 $searchmethod .= '</select>';
 $template->assign_var('SEARCHRANGE', $searchmethod);
 
-$template->assign_var('SEARCHQUERY', htmlentities(stripslashes($_GET['q'])));
+$template->assign_var('SEARCHQUERY', htmlentities(stripslashes($clv['q'])));
 
 
 $devcontrol = '';
@@ -454,6 +454,36 @@ foreach($devs_asort as $name => $info)
 $devcontrol .= "  </div>\n";
 
 $template->assign_var('DEVCONTROL', $devcontrol);
+
+// Show any active filters
+$filters = '';
+if($clv['q'] != $defaults['q'])
+{
+    $filters .= '  <li>"' . htmlentities(stripslashes($clv['q'])) . '" ' .
+                anchor(get_query(array('q' => $defaults['q'])),
+                       '<img src="images/11-delete.png" alt="Remove Filter"/>') .
+                "</li>";
+}
+foreach($clv['d'] as $dev_filter)
+{
+    $removed_dev = $clv['d'];
+    unset($removed_dev[array_search($dev_filter, $removed_dev)]);
+    $filters .= '  <li>' . $devs[$dev_filter]['name'] . ' ' .
+                anchor(get_query(array('d' => $removed_dev)),
+                       '<img src="images/11-delete.png" alt="Remove Filter"/>') .
+                "</li>";
+}
+if($filters != '')
+{
+    $filters = <<<FILTERS
+<div style="margin: 15px 200px 15px 20px; text-align: center;"><div class="filters"><ul>
+  <li>Active Filters:</li>
+$filters
+</ul></div></div>
+FILTERS;
+}
+
+$template->assign_var('FILTERS', $filters);
 
 
 // Do the actual page output now...
