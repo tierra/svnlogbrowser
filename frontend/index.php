@@ -66,7 +66,7 @@ $result = mysql_query("SELECT * FROM ${changelog['authors_table']}
 while($row = mysql_fetch_assoc($result))
 {
 	$devs[$row['username']] = array(
-		'name' => stripslashes(htmlentities($row['fullname'])),
+		'name' => stripslashes(htmlspecialchars($row['fullname'])),
 		'changes' => $row['commits'],
 		'active' => $row['active']
 	);
@@ -402,7 +402,7 @@ else
 $searchmethod .= '</select>';
 $template->assign_var('SEARCHRANGE', $searchmethod);
 
-$template->assign_var('SEARCHQUERY', htmlentities(stripslashes($clv['q'])));
+$template->assign_var('SEARCHQUERY', htmlspecialchars(stripslashes($clv['q'])));
 
 
 $devcontrol = '';
@@ -459,7 +459,7 @@ $template->assign_var('DEVCONTROL', $devcontrol);
 $filters = '';
 if($clv['q'] != $defaults['q'])
 {
-    $filters .= '  <li>"' . htmlentities(stripslashes($clv['q'])) . '" ' .
+    $filters .= '  <li>"' . htmlspecialchars(stripslashes($clv['q'])) . '" ' .
                 anchor(get_query(array('q' => $defaults['q'])),
                        '<img src="images/11-delete.png" alt="Remove Filter"/>') .
                 "</li>";
