@@ -227,7 +227,7 @@ else if(isset($_POST['dev_update']))
     while($row = mysql_fetch_assoc($result))
     {
         $fullname = addslashes($_POST['fn_'.$row['username']]);
-        if(!mysql_query("UPDATE `${cl['authors_table']}` SET `fullname` = \"$fullname\""))
+        if(!mysql_query("UPDATE `${cl['authors_table']}` SET `fullname` = \"$fullname\" WHERE `username` = \"${row['username']}\""))
             slb_die(mysql_error());
     }
 
