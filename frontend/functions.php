@@ -92,11 +92,11 @@ function svnlog_format_change($revision, $action, $path, $copy_path = '', $copy_
 				"&amp;pathrev={$revision}", "log");
 			break;
 		}
-		if($changelog['link_files'])
+		if($changelog['link_files'] && $action != 'D')
 			$output .= ", " . anchor("{$changelog['svn_root']}{$path}", "file");
 		$output .= "]</span>";
 	}
-	else if($changelog['link_files'])
+	else if($changelog['link_files'] && $action != 'D')
 	{
 		$output .= "&nbsp;&nbsp;<span class=\"ext_links\">[";
 		$output .= anchor("{$changelog['svn_root']}{$path}", "file");
