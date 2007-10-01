@@ -58,7 +58,7 @@ function slb_read_settings()
     while($row = mysql_fetch_assoc($result))
     {
         $link_files = false;
-        if(strtolower(substr($row['svn_url'], 0, 4)) == 'http')
+        if(strtolower(substr($row['svn_root'], 0, 4)) == 'http')
             $link_files = true;
 
         $changelogs[$row['id']] = array(
@@ -69,6 +69,7 @@ function slb_read_settings()
             'commits_table' => $row['table_prefix'] . '_commits',
             'latest'        => $row['latest_revision'],
             'svn'           => $row['svn_url'],
+            'svn_root'      => $row['svn_root'],
             'link_files'    => $link_files,
             'summary_limit' => $row['summary_limit'],
             'pathsep'       => '/', // Keeping this for now in case it is needed later.

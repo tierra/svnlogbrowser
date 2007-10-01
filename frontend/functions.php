@@ -93,13 +93,13 @@ function svnlog_format_change($revision, $action, $path, $copy_path = '', $copy_
 			break;
 		}
 		if($changelog['link_files'])
-			$output .= ", " . anchor("{$changelog['svn']}{$path}", "file");
+			$output .= ", " . anchor("{$changelog['svn_root']}{$path}", "file");
 		$output .= "]</span>";
 	}
 	else if($changelog['link_files'])
 	{
 		$output .= "&nbsp;&nbsp;<span class=\"ext_links\">[";
-		$output .= anchor("{$changelog['svn']}{$path}", "file");
+		$output .= anchor("{$changelog['svn_root']}{$path}", "file");
 		$output .= "]</span>";
 	}
 	if($copy_path != '')
