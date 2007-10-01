@@ -9,9 +9,9 @@
 # is (or will be) running from.
 
 db_hostname	= 'localhost'
-db_username	= 'svnlogbrowser'
-db_password	= 'svnlogbrowser'
-db_database	= 'svnlogbrowser'
+db_username	= ''
+db_password	= ''
+db_database	= ''
 
 
 ######## CONFIGURATION ENDS HERE ########
@@ -81,7 +81,7 @@ except dbapi.Error, e:
     sys.exit(1)
 
 # Pull the configuration from the database.
-cursor.execute('SELECT * FROM `changelogs`')
+cursor.execute('SELECT `id`, `name`, `table_prefix`, `latest_revision`, `svn_url` FROM `changelogs`')
 if cursor.rowcount < 1:
     print 'There are no changelogs setup, please run configuration first.'
     sys.exit(1)
@@ -101,7 +101,7 @@ authors_update = Template("""
 # Main changelog loop.
 for cl in changelogs:
 
-    (uid, name, table_prefix, latest_revision, svn_url, summary_limit, trunk, tags, branches, diff_url) = cl
+    (uid, name, table_prefix, latest_revision, svn_url) = cl
     print 'Changelog: %s' % name
     print 'Last Update: %d' % latest_revision
 
@@ -114,6 +114,9 @@ for cl in changelogs:
 
     (root_path, svn_info) = entry[0]
     print 'Current Revision: %d' % svn_info['rev'].number
+
+    cursor.execute('UPDATE changelogs SET `svn_root` = %s WHERE `id` = %s', (svn_info['repos_root_URL'], uid))
+    db.commit()
 
     if svn_info['rev'].number == latest_revision:
         print "No commits since last update, we're done here."
@@ -139,8 +142,13 @@ for cl in changelogs:
                 revision_end = pysvn.Revision(pysvn.opt_revision_kind.number, end_rev),
                 discover_changed_paths = True, strict_node_history = True, limit = 0 )
         except pysvn.ClientError, (e_msg, e):
+            fatal_error = True
             for error_message, code in e:
                 print 'Code:' , code , 'Message:' , error_message
+                if code == 195012: fatal_error = False
+            if not fatal_error:
+                continue
+            sys.exit(1)
 
         for log in messages:
             insert_commit(db, cursor, table_prefix, log)
