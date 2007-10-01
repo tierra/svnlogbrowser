@@ -33,6 +33,7 @@ foreach($icons as $action => $image)
 	$template->assign_var('ICON_' . $action, $image);
 
 $dev_delimiter = '-';
+$cl_keys = array_keys($changelogs);
 
 $defaults = array();
 $clv = array();
@@ -40,7 +41,7 @@ $clv = array();
 // Initialize all settings...
 // (set defaults where needed while validating input)
 
-$defaults['t'] = 1;
+$defaults['t'] = $cl_keys[0]; // First available
 $defaults['p'] = 1;
 $defaults['c'] = CHANGELOG_MIN_PER_PAGE;
 $defaults['s'] = 1; // Update below if changed.
