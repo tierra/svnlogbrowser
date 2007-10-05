@@ -6,6 +6,7 @@
  *   copyright            : (C) 2001 The phpBB Group
  *   email                : support@phpbb.com
  *
+ *   svnLogBrowser Version:
  *   $Id$
  *
  *

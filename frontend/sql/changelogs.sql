@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS `changelogs` (
   `table_prefix` varchar(32) NOT NULL,
   `latest_revision` int(10) unsigned NOT NULL default '0',
   `svn_url` varchar(255) NOT NULL,
+  `svn_root` varchar(255) default NULL,
   `summary_limit` tinyint(3) unsigned NOT NULL default '10',
   `trunk` varchar(255) default NULL,
   `tags` varchar(255) default NULL,
