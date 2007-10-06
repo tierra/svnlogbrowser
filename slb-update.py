@@ -106,9 +106,15 @@ for cl in changelogs:
     print 'Changelog: %s' % name
     print 'Last Update: %d' % latest_revision
 
-    entry = client.info2(svn_url, revision =
-                         pysvn.Revision(pysvn.opt_revision_kind.head),
-                         recurse = False)
+    try:
+        entry = client.info2(svn_url, revision =
+                             pysvn.Revision(pysvn.opt_revision_kind.head),
+                             recurse = False)
+    except pysvn.ClientError, (e_msg, e):
+        for error_message, code in e:
+            print 'Error: #%d - %s' % (code, error_message)
+	continue
+
     if len(entry) < 1:
         print 'Error retrieving information from the SVN repository.'
         continue
@@ -116,7 +122,7 @@ for cl in changelogs:
     (root_path, svn_info) = entry[0]
     print 'Current Revision: %d' % svn_info['rev'].number
 
-    cursor.execute('UPDATE changelogs SET `svn_root` = %s WHERE `id` = %s', (svn_info['repos_root_URL'], uid))
+    cursor.execute('UPDATE `changelogs` SET `svn_root` = %s WHERE `id` = %s', (svn_info['repos_root_URL'], uid))
     db.commit()
 
     if svn_info['rev'].number == latest_revision:
