@@ -7,7 +7,7 @@
 </head>
 <body>
 
-<div class="header"><h1>svnLogBrowser Configuration</h1></div>
+<div class="header"><h1>svnLogBrowser {VERSION} Configuration</h1></div>
 
 <div id="scontent">
 <center>

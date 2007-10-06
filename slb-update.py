@@ -18,6 +18,9 @@ db_database	= ''
 ######## CONFIGURATION ENDS HERE ########
 
 
+SLB_VERSION = '1.0.0'
+print 'svnLogBrowser - Version: %s' % SLB_VERSION
+
 import MySQLdb as dbapi
 import sys, pysvn, time
 from string import Template

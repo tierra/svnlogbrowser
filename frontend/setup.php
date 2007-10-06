@@ -8,7 +8,8 @@ if(!file_exists('config.php'))
 	die('Please copy "config.php.dist" to "config.php" and change your settings as needed.');
 
 require_once('config.php');
-require_once("template.php");
+require_once('template.php');
+require_once('version.php');
 
 session_cache_expire(24);
 session_start();
@@ -22,6 +23,7 @@ function slb_output($content, $message = '')
     $template = new Template();
     $template->assign_var('STYLESHEET', $stylesheet);
     $template->assign_var('CONTENT', $content);
+    $template->assign_var('VERSION', SLB_VERSION);
     $template->set_filenames(array('setup' => 'setup.tpl'));
     $template->pparse('setup');
     die();
