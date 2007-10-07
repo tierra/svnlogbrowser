@@ -267,8 +267,8 @@ while($commit = mysql_fetch_assoc($db_commits))
 		$output .= "    </p>\n";
 	}
 
-	$message = nl2br(htmlspecialchars(trim($commit['message'])));
-	$output .= "    <p>{$message}</p>\n";
+	$message = svnlog_format_message($commit['message']);
+	$output .= "    <p class=\"log_message\">{$message}</p>\n";
 	$output .= "  </dd>\n";
 }
 $output .= "</dl>\n";

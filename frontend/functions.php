@@ -117,4 +117,20 @@ function svnlog_format_change($revision, $action, $path, $copy_path = '', $copy_
 	return $output;
 }
 
+function svnlog_format_message($message)
+{
+	$formatted = array();
+	$tokenized = explode("\n", $message);
+	foreach($tokenized as $line)
+	{
+		$line = htmlspecialchars($line); $x = 0;
+		while($x < strlen($line)) { if($line[$x] != ' ') break; $x++; }
+		$space = str_repeat(' &nbsp;', (int)($x / 2));
+		$line = $space . substr($line, $x - ($x % 2));
+		$formatted[] = '&nbsp;' . $line;
+	}
+	if(trim(end($tokenized)) == '') array_pop($formatted);
+	return implode($formatted, "\n<br/>");
+}
+
 ?>

@@ -46,10 +46,18 @@ dd {
 	margin: 5px 20px;
 }
 
-p, pre {
+p {
 	font-family: "Trebuchet MS", verdana, sans-serif;
 	font-size: 100%;
 	margin: 5px;
+}
+
+p.log_message {
+        /* Uncomment this for <pre>-style log messages. */
+	/*
+	font-family: "Bitstream Vera Sans Mono", monospace;
+	font-size: 90%;
+	*/
 }
 
 #scontent table {
