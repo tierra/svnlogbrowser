@@ -72,6 +72,7 @@ def insert_commit(db, cursor, table_prefix, log):
 
     db.commit()
 
+
 # Connect to the database.
 try:
     db = dbapi.connect(host    = db_hostname,
@@ -80,16 +81,17 @@ try:
                        db      = db_database,
                        charset = 'utf8')
     cursor = db.cursor()
-except dbapi.Error, e:
-    print 'There was an error connecting to the database: %s' % e
-    sys.exit(1)
 
-# Pull the configuration from the database.
-cursor.execute('SELECT `id`, `name`, `table_prefix`, `latest_revision`, `svn_url` FROM `changelogs`')
-if cursor.rowcount < 1:
-    print 'There are no changelogs setup, please run configuration first.'
+    # Pull the configuration from the database.
+    cursor.execute('SELECT `id`, `name`, `table_prefix`, `latest_revision`, `svn_url` FROM `changelogs`')
+    if cursor.rowcount < 1:
+        print 'There are no changelogs setup, please run configuration first.'
+        sys.exit(1)
+    changelogs = cursor.fetchall()
+
+except dbapi.Error, e:
+    print 'Error initializing database: %s' % e
     sys.exit(1)
-changelogs = cursor.fetchall()
 
 # Startup our SVN client.
 client = pysvn.Client()
