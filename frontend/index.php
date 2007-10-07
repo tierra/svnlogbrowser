@@ -47,7 +47,7 @@ $defaults['p'] = 1;
 $defaults['c'] = CHANGELOG_MIN_PER_PAGE;
 $defaults['s'] = 1; // Update below if changed.
 $defaults['q'] = '';
-$defaults['r'] = 3; // Search either files or logs by default
+$defaults['r'] = 2; // Search logs by default
 $defaults['d'] = array();
 
 $clv['t'] = $defaults['t'];
@@ -287,6 +287,7 @@ function get_query($custom = array(), $post = false)
 		if(/*!array_key_exists($key, $custom) &&*/ $defaults[$key] == $value)
 			unset($new[$key]);
 	if(isset($new['d'])) $new['d'] = implode($dev_delimiter, $new['d']);
+	if(isset($new['q'])) $new['q'] = stripslashes($new['q']);
 	if($post) return $new;
 	$query = http_build_query($new, '', '&amp;');
 	if($query != '')
@@ -386,21 +387,15 @@ $template->assign_var('SEARCHQV', $hiddenvars);
 
 $searchmethod = '<select name="r">';
 if($clv['r'] == 1)
-	$searchmethod .= '<option value="1" selected="selected">Files</option>';
-else
-	$searchmethod .= '<option value="1">Files</option>';
-if($clv['r'] == 2)
-	$searchmethod .= '<option value="2" selected="selected">Logs</option>';
-else
+{
+	$searchmethod .= '<option value="1" selected="selected">Filenames</option>';
 	$searchmethod .= '<option value="2">Logs</option>';
-if($clv['r'] == 3)
-	$searchmethod .= '<option value="3" selected="selected">Files or Logs</option>';
+}
 else
-	$searchmethod .= '<option value="3">Files or Logs</option>';
-if($clv['r'] == 4)
-	$searchmethod .= '<option value="4" selected="selected">Files and Logs</option>';
-else
-	$searchmethod .= '<option value="4">Files and Logs</option>';
+{
+	$searchmethod .= '<option value="1">Files</option>';
+	$searchmethod .= '<option value="2" selected="selected">Logs</option>';
+}
 $searchmethod .= '</select>';
 $template->assign_var('SEARCHRANGE', $searchmethod);
 
@@ -462,7 +457,7 @@ $filters = '';
 if($clv['q'] != $defaults['q'])
 {
     $filters .= '  <li>"' . htmlspecialchars(stripslashes($clv['q'])) . '" ' .
-                anchor(get_query(array('q' => $defaults['q'])),
+                anchor(get_query(array('q' => $defaults['q'], 'r' => $defaults['r'])),
                        '<img src="images/11-delete.png" alt="Remove Filter"/>') .
                 "</li>";
 }

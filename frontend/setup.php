@@ -80,7 +80,7 @@ function slb_main_page()
 <tr>
     <td>${cl['title']}</td><td>${cl['svn']}</td><td>${cl['latest']}</td>
     <td><a href="setup.php?edit&amp;t=$id"><img src="images/pencil.png" alt="Edit" title="Edit"/></a>
-        <a href="setup.php?delete&amp;t=$id" onclick="return confirm('Are you sure you want to delete ${cl['name']}?');">
+        <a href="setup.php?delete&amp;t=$id" onclick="return confirm('Are you sure you want to delete ${cl['title']}?');">
             <img src="images/delete.png" alt="Delete" title="Delete"/></a></td>
 </tr>
 CONTENT;

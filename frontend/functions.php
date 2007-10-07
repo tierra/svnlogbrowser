@@ -133,4 +133,23 @@ function svnlog_format_message($message)
 	return implode($formatted, "\n<br/>");
 }
 
+if(!function_exists('http_build_query'))
+{
+	function http_build_query($data, $prefix = null, $separator = null, $key = null)
+	{
+		$res = array();
+		foreach((array)$data as $k => $v)
+		{
+			$tmp_key = is_int($k) ? $prefix . $k : $k;
+			if($key) $tmp_key = $key.'['.$tmp_key.']';
+			if(is_array($v) || is_object($v))
+				$res[] = http_build_query($v, $prefix, $separator, $tmp_key);
+			else
+				$res[] = urlencode($tmp_key) . "=" . urlencode($v);
+		}
+		if($separator == null) $separator = ini_get('arg_separator.output');
+		return implode($separator, $res);
+	}
+}
+
 ?>
