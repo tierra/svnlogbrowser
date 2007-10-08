@@ -9,10 +9,10 @@
 # configuration from. This should be the same database that the web frontend
 # is (or will be) running from.
 
-db_hostname	= 'localhost'
-db_username	= ''
-db_password	= ''
-db_database	= ''
+db_hostname = 'localhost'
+db_username = ''
+db_password = ''
+db_database = ''
 
 
 ######## CONFIGURATION ENDS HERE ########
@@ -118,7 +118,7 @@ for cl in changelogs:
     except pysvn.ClientError, (e_msg, e):
         for error_message, code in e:
             print 'Error: #%d - %s' % (code, error_message)
-	continue
+        continue
 
     if len(entry) < 1:
         print 'Error retrieving information from the SVN repository.'
