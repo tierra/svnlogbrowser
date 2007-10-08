@@ -5,10 +5,13 @@
 Requirements
 ------------
 
-- Webserver with PHP 4.3.0+ or 5
-- MySQL
-- Python 2.4
+- Webserver with PHP 4.3 or later
+- MySQL 4.1 or later (untested on 4.0)
+- Python 2.4 or later
 - Python Modules: MySQLdb, pysvn
+
+MySQLdb: http://sourceforge.net/projects/mysql-python/
+pysvn: http://pysvn.tigris.org/
 
 Quick Start
 -----------
