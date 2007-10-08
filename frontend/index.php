@@ -393,7 +393,7 @@ if($clv['r'] == 1)
 }
 else
 {
-	$searchmethod .= '<option value="1">Files</option>';
+	$searchmethod .= '<option value="1">Filenames</option>';
 	$searchmethod .= '<option value="2" selected="selected">Logs</option>';
 }
 $searchmethod .= '</select>';
