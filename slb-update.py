@@ -25,6 +25,17 @@ import MySQLdb as dbapi
 import sys, pysvn, time
 from string import Template
 
+def print_pysvn_error(errors):
+
+    codes = []
+    if len(errors) > 1:
+        for message, code in errors[1]:
+            print 'Error: #%d - %s' % (code, message)
+            codes.append(code)
+    elif len(errors) is 1:
+        print 'Error: %s' % errors[0]
+    return codes
+
 def clear_null(value):
 
     if value is None: return ''
@@ -115,9 +126,8 @@ for cl in changelogs:
         entry = client.info2(svn_url, revision =
                              pysvn.Revision(pysvn.opt_revision_kind.head),
                              recurse = False)
-    except pysvn.ClientError, (e_msg, e):
-        for error_message, code in e:
-            print 'Error: #%d - %s' % (code, error_message)
+    except pysvn.ClientError, e:
+        print_pysvn_error(e.args)
         continue
 
     if len(entry) < 1:
@@ -153,12 +163,9 @@ for cl in changelogs:
                 revision_start = pysvn.Revision(pysvn.opt_revision_kind.number, start_rev),
                 revision_end = pysvn.Revision(pysvn.opt_revision_kind.number, end_rev),
                 discover_changed_paths = True, strict_node_history = True, limit = 0 )
-        except pysvn.ClientError, (e_msg, e):
-            fatal_error = True
-            for error_message, code in e:
-                print 'Code:' , code , 'Message:' , error_message
-                if code == 195012: fatal_error = False
-            if not fatal_error:
+        except pysvn.ClientError, e:
+            codes = print_pysvn_error(e.args)
+            if 195012 in codes:
                 continue
             sys.exit(1)
 
