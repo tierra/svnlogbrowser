@@ -130,7 +130,11 @@ function svnlog_format_message($message)
 		$formatted[] = '&nbsp;' . $line;
 	}
 	if(trim(end($tokenized)) == '') array_pop($formatted);
-	return implode($formatted, "\n<br/>");
+	$text = implode($formatted, "\n<br/>");
+	// Munge email addresses for now until options can be added to changelogs.
+	$text = preg_replace('/((?:[a-z0-9\-_]+\.)*[a-z0-9\-_]+)@(?:[a-z0-9\-]+\.)+[a-z]{2,4}/i', '$1@...', $text);
+
+	return $text;
 }
 
 if(!function_exists('http_build_query'))

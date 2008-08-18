@@ -175,11 +175,12 @@ if($clv['q'] != '')
 	$logs = "MATCH(message) AGAINST('{$clv['q']}' IN BOOLEAN MODE)";
 	$join = "RIGHT JOIN ${changelog['changes_table']} ON " .
 	        "${changelog['changes_table']}.revision = ${changelog['commits_table']}.revision";
+	$groupby = " GROUP BY ${changelog['commits_table']}.revision ";
 	switch($clv['r'])
 	{
 	case 1:
 		$db_join_expr = $join;
-		$db_where_expr .= " " . $files;
+		$db_where_expr .= " " . $files . $groupby;
 		break;
 	case 2:
 		$db_where_expr .= " " .$logs;
@@ -199,7 +200,7 @@ $db_offset = ($clv['p'] - 1) * $clv['c'];
 if($db_where_expr != '') $db_where_expr = "WHERE $db_where_expr";
 $db_query = "SELECT SQL_CALC_FOUND_ROWS ${changelog['commits_table']}.* " .
             "FROM ${changelog['commits_table']} $db_join_expr $db_where_expr " .
-            "GROUP BY ${changelog['commits_table']}.revision " .
+            /*"GROUP BY ${changelog['commits_table']}.revision " . */
             "ORDER BY ${changelog['commits_table']}.revision DESC";
 $db_limit = " LIMIT $db_offset, {$clv['c']}";
 //echo "Query: $db_query$db_limit\n\n";
