@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="svnLogBrowser : Web-based frontend for browsing SVN commit logs.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>svnLogBrowser</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/tierra/svnlogbrowser">View on GitHub</a>
+
+          <h1 id="project_title">svnLogBrowser</h1>
+          <h2 id="project_tagline">Web-based frontend for browsing SVN commit logs.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/tierra/svnlogbrowser/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/tierra/svnlogbrowser/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="svnlogbrowser" class="anchor" href="#svnlogbrowser"><span class="octicon octicon-link"></span></a>svnLogBrowser</h1>
+
+<p><strong>This project has been retired, use at your own risk!</strong></p>
+
+<p>svnLogBrowser provides a web-based frontend for browsing through commit logs
+from any Subversion repository, and is released under the <a href="http://svn.svnlogbrowser.org/trunk/LICENSE">GNU GPL</a>. It
+gives developers a tool for quickly locating changes, reviewing peer
+developer's commits, or just a general overview of what recent changes have
+been made to a project.</p>
+
+<h2>
+<a name="features" class="anchor" href="#features"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Quick, fulltext searches on changed paths or logs of all commits.</li>
+<li>Ability to syndicate only specific SVN paths, not just whole repositories.</li>
+<li>Identifies configured trunk, tag, or branch commits.</li>
+<li>Visitors can browse and search through individual developers' commits.</li>
+<li>Automatic links to path logs and file diffs. (only ViewVC is currently
+supported, more to follow soon)</li>
+<li>Automatic direct links to changed SVN files/paths. (only when using 
+<code>http[s]://</code> Subversion URLs)</li>
+<li>Customizable display names for developers.</li>
+<li>Commit counts for each developer.</li>
+<li>Optimized interface only shows active developers by default.</li>
+<li>Supports multiple changelogs in single installation.</li>
+<li>Stores current view settings in URL for linking to peers.</li>
+<li>Large commits can be hidden by default. (optimized with AJAX)</li>
+<li>Easy to use web installation and configuration script.</li>
+</ul><h2>
+<a name="live-demos" class="anchor" href="#live-demos"><span class="octicon octicon-link"></span></a>Live Demos</h2>
+
+<p><a href="http://demo.svnlogbrowser.org/">Subversion SVN Changelog</a> - A changelog of all commits to the
+<a href="http://subversion.tigris.org/">Subversion</a> repository. The svnLogBrowser
+changelog is also hosted here.</p>
+
+<p><a href="http://wx.ibaku.net/changelog/">wxWidgets SVN Changelog</a> - This changelog shows off the power of these
+scripts on one of the largest open source SVN repositories (with about 50,000
+revisions).</p>
+
+<h2>
+<a name="requirements" class="anchor" href="#requirements"><span class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>Webserver with PHP 4.3 or later</li>
+<li>MySQL 4.1 or later (untested on 4.0)</li>
+<li>Python 2.4 or later</li>
+<li>Python Modules: <a href="http://sourceforge.net/projects/mysql-python/">MySQLdb</a>, <a href="http://pysvn.tigris.org/">pysvn</a>
+</li>
+</ul><h2>
+<a name="quick-start" class="anchor" href="#quick-start"><span class="octicon octicon-link"></span></a>Quick Start</h2>
+
+<ol>
+<li>Setup a new MySQL database and user with access to that database.</li>
+<li>Edit the <code>slb-update.py</code> script, and configure the database credentials.</li>
+<li>Move the <code>frontend</code> folder to the location on your website you would like
+users to access the logs.</li>
+<li>In your frontend folder, move <code>config.php.dist</code> to <code>config.php</code>, and edit
+<code>config.php</code>, adding in the database credentials. (this is done once for
+the update script, and once for the web frontend)</li>
+<li>Point your browser at <code>http://example.com/path/to/slb/setup.php</code> to
+configure svnLogBrowser. See the "Configuration" section for details on
+settings.</li>
+<li>Run <code>slb-update.py</code> to make the first update. Keep in mind that this can
+take a long time for large repositories, be patient.
+
+<ul>
+<li><code>$ python slb-update.py</code></li>
+</ul>
+</li>
+<li>Go back to the <code>setup.php</code> page, and add any developer's names you wish to
+display, then lock out access to the <code>setup.php</code> page. The page may require
+the password to edit anything, but it is not secure.
+
+<ul>
+<li><code>$ chmod 000 setup.php</code></li>
+</ul>
+</li>
+<li>Edit your crontab, and add the <code>slb-update.py</code> script to run however often
+you want it to update your changelogs.</li>
+</ol><h2>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>There are two individual parts of svnLogBrowser that need to work together to
+bring users the latest changes. The first is the frontend which consists of
+all the PHP scripts for browsing changes, and changing settings. The second is
+the Python <code>slb-update.py</code> script, which is built to run periodically from
+cron which reads the latest commits from the SVN repository, and adds them to
+the database for quick retrieval and searching.</p>
+
+<p>The scripts are written in a way that it's possible to configure a secondary
+server to do the updates so the web frontend only requires MySQL and PHP, but
+it is more efficient to run the update script on the same server as MySQL.</p>
+
+<p>Once the first update has been made, subsequent updates will only retrieve
+logs for new commits. So after you've made the first pass, updates will
+usually only take a few seconds. If you don't like the interval of time when
+commits have been made, but aren't shown in the frontend, you could even add
+the update script into the commit hooks for the SVN repository if you have the
+appropriate access. (instructions not given)</p>
+
+<h2>
+<a name="configuration" class="anchor" href="#configuration"><span class="octicon octicon-link"></span></a>Configuration</h2>
+
+<p>This section outlines what each of the changelog settings are for.</p>
+
+<p>Name: This is the displayed name for the changelog, simple enough.</p>
+
+<p><strong>Table Prefix</strong>: Each of your changelogs use individual tables in the
+database to ease the stress of searches and administration. The name of the
+tables used will be prefixed with this setting. These must be unique between
+changelogs.</p>
+
+<p><strong>SVN URL</strong>: This should be the URL to the SVN repository you want to watch
+logs from. You can use any of the standard URI that Subversion supports. Any
+of <code>svn://</code>, <code>http://</code>, and <code>https://</code> will work. If you use a HTTP based URL,
+svnLogBrowser will automatically link to the files in the browser so users can
+take a look at the whole file in question.</p>
+
+<p><strong>Summary Limit</strong>: If any one commit contains more than the given number of
+changes here, then they will be hidden from the user by default with a link
+the user must click to see them. This is overridden if the user has turned off
+file summarizing. This functionality helps prevent PHP memory limit problems
+and also speeds up page load times significantly for some requests since the
+changes aren't actually generated, sent to the browser, and rendered until the
+user clicks the link. 10 changes is a good default setting for most.</p>
+
+<p><strong>Trunk, Tags, and Branches</strong>: (Optional) For svnLogBrowser to identify, mark,
+and shorten the display of changed paths, it needs to be told where each of
+these folders are located relative to the repository root. In traditional
+repositories, these will simply be <code>/trunk</code>, <code>/tags</code>, and <code>/branches</code>
+respectively. Please note the missing trailing slash, this is important.</p>
+
+<p><strong>Diff URL</strong>: (Optional) If you have ViewVC setup for your repository, you can
+add the URL to your top ViewVC page for the repository and svnLogBrowser will
+automatically link changes to their diffs and path logs in ViewVC. For
+Example, if your repository was <code>MyProject</code>, you would set this to something
+like this: <code>http://www.myproject.com/viewvc/MyProject</code> (no trailing slash)</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">svnLogBrowser maintained by <a href="https://github.com/tierra">tierra</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-13054714-4");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
