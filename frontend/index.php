@@ -309,7 +309,9 @@ $types = '';
 while(list($key, $data) = each($changelogs))
 {
 	if($clv['t'] != $key)
-		$types .= anchor(get_query(array('t' => $key)), $data['title']);
+		$types .= anchor(get_query(array('t' => $key,
+		                                 'p' => $defaults['p'])),
+		                           $data['title']);
 	else
 		$types .= $data['title'];
 	$types .= ', ';
