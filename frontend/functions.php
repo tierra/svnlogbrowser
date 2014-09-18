@@ -97,6 +97,26 @@ function svnlog_format_change($revision, $action, $path, $copy_path = '', $copy_
 			$output .= ", " . anchor("{$changelog['svn_root']}{$path}", "file");
 		$output .= "]</span>";
 	}
+	else if($changelog['trac_url'] != '')
+	{
+		$output .= "&nbsp;&nbsp;<span class=\"ext_links\">[";
+		switch($action)
+		{
+		case 'M':
+			$output .= anchor("{$changelog['trac_url']}/changeset/{$revision}{$path}", "diff") . ", ";
+			$output .= anchor("{$changelog['trac_url']}/log{$path}?rev={$revision}", "log");
+			break;
+		case 'D':
+			$output .= anchor("{$changelog['trac_url']}/log{$path}?rev={$revision}", "old log");
+			break;
+		default: // 'A' and 'R' are basically the same for needed links.
+			$output .= anchor("{$changelog['trac_url']}/log{$path}?rev={$revision}", "log");
+			break;
+		}
+		if($changelog['link_files'] && $action != 'D')
+			$output .= ", " . anchor("{$changelog['svn_root']}{$path}", "file");
+		$output .= "]</span>";
+	}
 	else if($changelog['link_files'] && $action != 'D')
 	{
 		$output .= "&nbsp;&nbsp;<span class=\"ext_links\">[";
