@@ -1,6 +1,4 @@
 <?php
-// $Id$
-
 // SVN Changelog: Common Helper Functions
 // Authors: Bryan Petty
 
