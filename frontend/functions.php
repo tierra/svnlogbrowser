@@ -41,13 +41,13 @@ function svnlog_format_path($path, $action = '')
 	// Branch Commit
 	else if(preg_match("%^{$changelog['branches']}$sep([^$sep]+)(.*)$%", $path, $matches))
 	{
-		$text .= "<span class=\"branch\">[{$matches[1]}]</span>&nbsp;";
+		$xhtml .= "<span class=\"branch\">[{$matches[1]}]</span>&nbsp;";
 		$clean_path = $matches[2];
 	}
 	// Tag Commit
 	else if(preg_match("%^{$changelog['tags']}$sep([^$sep]+)(.*)$%", $path, $matches))
 	{
-		$text .= "<span class=\"tag\">[{$matches[1]}]</span>&nbsp;";
+		$xhtml .= "<span class=\"tag\">[{$matches[1]}]</span>&nbsp;";
 		$clean_path = $matches[2];
 	}
 	else
@@ -56,11 +56,11 @@ function svnlog_format_path($path, $action = '')
 	if($clean_path == '') $clean_path = $pathsep;
 	
 	if($action == '')
-		$text .= "{$clean_path}";
+		$xhtml .= "{$clean_path}";
 	else
-		$text .= "<span class=\"{$action}\">{$clean_path}</span>";
+		$xhtml .= "<span class=\"{$action}\">{$clean_path}</span>";
 
-	return $text;
+	return $xhtml;
 }
 
 function svnlog_format_change($revision, $action, $path, $copy_path = '', $copy_revision = '')
