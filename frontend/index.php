@@ -151,6 +151,8 @@ $num_revisions = 0;
 $db_where_expr = '';
 $db_join_expr = '';
 
+$dev_filter_active = false;
+
 // Filter developers as necessary
 if(count($clv['d']) > 0)
 {
